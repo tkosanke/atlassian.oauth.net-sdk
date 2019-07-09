@@ -17,15 +17,17 @@ namespace Atlassian.Jira.Remote
     {
         private readonly RestClient _restClient;
         private readonly JiraRestClientSettings _clientSettings;
+        private bool _oauth2;
 
         /// <summary>
         /// Creates a new instance of the JiraRestClient class.
         /// </summary
         /// <param name="url">Url to the JIRA server.</param>
-        /// <param name="username">Username used to authenticate.</param>
-        /// <param name="password">Password used to authenticate.</param>
+        /// <param name="usernameOrApplication">Username used to authenticate.</param>
+        /// <param name="passwordOrSecret">Password used to authenticate.</param>
         /// <param name="settings">Settings to configure the rest client.</param>
-        public JiraRestClient(string url, string username = null, string password = null, JiraRestClientSettings settings = null)
+        /// <param name="oauth2">To indicate if the client will be Basic of OAuth2</param>
+        public JiraRestClient(string url, string usernameOrApplication = null, string passwordOrSecret = null, JiraRestClientSettings settings = null, bool oauth2 = false)
         {
             url = url.EndsWith("/") ? url : url += "/";
 
@@ -34,10 +36,11 @@ namespace Atlassian.Jira.Remote
             {
                 Proxy = _clientSettings.Proxy
             };
+            _oauth2 = oauth2;
 
-            if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password))
+            if (!String.IsNullOrEmpty(usernameOrApplication) && !String.IsNullOrEmpty(passwordOrSecret))
             {
-                this._restClient.Authenticator = new HttpBasicAuthenticator(username, password);
+                this._restClient.Authenticator = new HttpBasicAuthenticator(usernameOrApplication, passwordOrSecret);
             }
         }
 
@@ -113,6 +116,12 @@ namespace Atlassian.Jira.Remote
                 request.AddJsonBody(requestBody);
             }
 
+            if (_oauth2)
+            {
+                request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+                request.AddHeader("Accept", "application/json");
+            }
+
             LogRequest(request, requestBody);
             var response = await ExecuteRawResquestAsync(request, token).ConfigureAwait(false);
             return GetValidJsonFromResponse(request, response);
@@ -123,6 +132,12 @@ namespace Atlassian.Jira.Remote
         /// </summary>
         public async Task<IRestResponse> ExecuteRequestAsync(IRestRequest request, CancellationToken token = default(CancellationToken))
         {
+            if (_oauth2)
+            {
+                request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+                request.AddHeader("Accept", "application/json");
+            }
+
             LogRequest(request);
             var response = await ExecuteRawResquestAsync(request, token).ConfigureAwait(false);
             GetValidJsonFromResponse(request, response);

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth;
 
 namespace Atlassian.Jira.Remote
 {
@@ -51,6 +52,22 @@ namespace Atlassian.Jira.Remote
                 {
                     this._restClient.Authenticator = OAuth1Authenticator.ForClientAuthentication(consumerSecret, consumerKey, username, password);
                 }
+            }
+        }
+
+        public JiraRestClient(string url, string consumerKey, string consumerSecret, string accessToken, string accessTokenSecret, JiraRestClientSettings settings = null)
+        {
+            url = url.EndsWith("/") ? url : url += "/";
+
+            _clientSettings = settings ?? new JiraRestClientSettings();
+            _restClient = new RestClient(url)
+            {
+                Proxy = _clientSettings.Proxy
+            };
+
+            if (!String.IsNullOrEmpty(consumerKey) && !String.IsNullOrEmpty(consumerSecret) && !String.IsNullOrEmpty(accessToken) && !String.IsNullOrEmpty(accessTokenSecret))
+            {
+                this._restClient.Authenticator = OAuth1Authenticator.ForProtectedResource(consumerKey, consumerSecret, accessToken, accessTokenSecret, OAuthSignatureMethod.RsaSha1);
             }
         }
 

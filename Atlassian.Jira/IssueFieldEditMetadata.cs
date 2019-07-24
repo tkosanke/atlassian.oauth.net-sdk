@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace Atlassian.Jira
 {
     /// <summary>
-    /// This class is used as output of /// http://example.com:8080/jira/rest/api/2/issue/{issueIdOrKey}/editmeta [GET]
+    /// This class is used as output of /// http://example.com:8080/jira/rest/api/latest/issue/{issueIdOrKey}/editmeta [GET]
     ///  </summary>
     public class IssueFieldEditMetadata
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -51,5 +52,27 @@ namespace Atlassian.Jira.Remote
         /// <param name="requestBody">Request body to be serialized.</param>
         /// <param name="token">Cancellation token for this operation.</param>
         Task<T> ExecuteRequestAsync<T>(Method method, string resource, object requestBody = null, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Executes an async request and serializes the response to an object.
+        /// </summary>
+        /// <typeparam name="T">Type to serialize the response.</typeparam>
+        /// <param name="method">Request method.</param>
+        /// <param name="resource">Request resource url.</param>
+        /// <param name="requestBody">Request body to be serialized.</param>
+        /// <param name="token">Cancellation token for this operation.</param>
+        /// <param name="queryParameters">Parameters to add to OAuth queries.</param>
+        Task<JToken> ExecuteRequestAsync(Method method, string resource, Dictionary<string, string> queryParameters, object requestBody = null, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Executes an async request and serializes the response to an object.
+        /// </summary>
+        /// <typeparam name="T">Type to serialize the response.</typeparam>
+        /// <param name="method">Request method.</param>
+        /// <param name="resource">Request resource url.</param>
+        /// <param name="requestBody">Request body to be serialized.</param>
+        /// <param name="token">Cancellation token for this operation.</param>
+        /// <param name="queryParameters">Parameters to add to OAuth queries.</param>
+        Task<T> ExecuteRequestAsync<T>(Method method, string resource, Dictionary<string, string> queryParameters, object requestBody = null, CancellationToken token = default(CancellationToken));
     }
 }

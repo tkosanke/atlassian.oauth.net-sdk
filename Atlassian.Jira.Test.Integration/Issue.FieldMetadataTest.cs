@@ -50,9 +50,9 @@ namespace Atlassian.Jira.Test.Integration
             IssueCustomFieldTest.IssueFieldMetadataCustomFieldOption option1 = options.FirstOrDefault(x => x.Value == "option1");
             IssueCustomFieldTest.IssueFieldMetadataCustomFieldOption option2 = options.FirstOrDefault(x => x.Value == "option2");
             IssueCustomFieldTest.IssueFieldMetadataCustomFieldOption option3 = options.FirstOrDefault(x => x.Value == "option3");
-            AssertCustomFieldOption(option1, 10103, "option1", @".*/rest/api/2/customFieldOption/10103");
-            AssertCustomFieldOption(option2, 10104, "option2", @".*/rest/api/2/customFieldOption/10104");
-            AssertCustomFieldOption(option3, 10105, "option3", @".*/rest/api/2/customFieldOption/10105");
+            AssertCustomFieldOption(option1, 10103, "option1", @".*/rest/api/latest/customFieldOption/10103");
+            AssertCustomFieldOption(option2, 10104, "option2", @".*/rest/api/latest/customFieldOption/10104");
+            AssertCustomFieldOption(option3, 10105, "option3", @".*/rest/api/latest/customFieldOption/10105");
         }
 
         private void AssertCustomFieldOption(IssueCustomFieldTest.IssueFieldMetadataCustomFieldOption option, int id, string value, string selfRegex)

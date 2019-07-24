@@ -21,7 +21,9 @@ namespace Atlassian.Jira.Remote
             var cache = _jira.Cache;
             if (!cache.Projects.Any())
             {
-                var remoteProjects = await _jira.RestClient.ExecuteRequestAsync<RemoteProject[]>(Method.GET, "rest/api/2/project?expand=lead,url", null, token).ConfigureAwait(false);
+                var queryParameters = new Dictionary<string, string>();
+                queryParameters.Add("expand", "lead,url");
+                var remoteProjects = await _jira.RestClient.ExecuteRequestAsync<RemoteProject[]>(Method.GET, "rest/api/latest/project", queryParameters, null, token).ConfigureAwait(false);
                 cache.Projects.TryAdd(remoteProjects.Select(p => new Project(_jira, p)));
             }
 
@@ -30,7 +32,7 @@ namespace Atlassian.Jira.Remote
 
         public async Task<Project> GetProjectAsync(string projectKey, CancellationToken token = new CancellationToken())
         {
-            var resource = String.Format("rest/api/2/project/{0}?expand=lead,url", projectKey);
+            var resource = String.Format("rest/api/latest/project/{0}?expand=lead,url", projectKey);
             var remoteProject = await _jira.RestClient.ExecuteRequestAsync<RemoteProject>(Method.GET, resource, null, token).ConfigureAwait(false);
             return new Project(_jira, remoteProject);
         }

@@ -18,7 +18,7 @@ namespace Atlassian.Jira.Remote
 
         public async Task<JiraUser> CreateUserAsync(JiraUserCreationInfo user, CancellationToken token = default(CancellationToken))
         {
-            var resource = "rest/api/2/user";
+            var resource = "rest/api/latest/user";
             var requestBody = JToken.FromObject(user);
 
             return await _jira.RestClient.ExecuteRequestAsync<JiraUser>(Method.POST, resource, requestBody, token).ConfigureAwait(false);
@@ -26,27 +26,27 @@ namespace Atlassian.Jira.Remote
 
         public Task DeleteUserAsync(string username, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format("rest/api/2/user?username={0}", Uri.EscapeDataString(username));
+            var resource = String.Format("rest/api/latest/user?username={0}", Uri.EscapeDataString(username));
             return _jira.RestClient.ExecuteRequestAsync(Method.DELETE, resource, null, token);
         }
 
         public Task<JiraUser> GetUserAsync(string username, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format("rest/api/2/user?username={0}", Uri.EscapeDataString(username));
-            return _jira.RestClient.ExecuteRequestAsync<JiraUser>(Method.GET, resource, null, token);
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("username", Uri.EscapeDataString(username));
+            return _jira.RestClient.ExecuteRequestAsync<JiraUser>(Method.GET, "rest/api/latest/user", queryParameters, null, token);
         }
 
         public Task<IEnumerable<JiraUser>> SearchUsersAsync(string query, JiraUserStatus userStatus = JiraUserStatus.Active, int maxResults = 50, int startAt = 0, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format(
-                "rest/api/2/user/search?username={0}&includeActive={1}&includeInactive={2}&startAt={3}&maxResults={4}",
-                Uri.EscapeDataString(query),
-                userStatus.HasFlag(JiraUserStatus.Active),
-                userStatus.HasFlag(JiraUserStatus.Inactive),
-                startAt,
-                maxResults);
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("username", Uri.EscapeDataString(query));
+            queryParameters.Add("includeActive", userStatus.HasFlag(JiraUserStatus.Active).ToString());
+            queryParameters.Add("includeInactive", userStatus.HasFlag(JiraUserStatus.Inactive).ToString());
+            queryParameters.Add("startAt", startAt.ToString());
+            queryParameters.Add("maxResults", maxResults.ToString());
 
-            return _jira.RestClient.ExecuteRequestAsync<IEnumerable<JiraUser>>(Method.GET, resource, null, token);
+            return _jira.RestClient.ExecuteRequestAsync<IEnumerable<JiraUser>>(Method.GET, "rest/api/latest/user/search", queryParameters, null, token);
         }
     }
 }

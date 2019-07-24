@@ -41,13 +41,13 @@ namespace Atlassian.Jira.Remote
                 bodyObjectContent.Add("summary", summary);
             }
 
-            return _jira.RestClient.ExecuteRequestAsync(Method.POST, String.Format("rest/api/2/issue/{0}/remotelink", issueKey), bodyObject, token);
+            return _jira.RestClient.ExecuteRequestAsync(Method.POST, String.Format("rest/api/latest/issue/{0}/remotelink", issueKey), bodyObject, token);
         }
 
         public async Task<IEnumerable<IssueRemoteLink>> GetRemoteLinksForIssueAsync(string issueKey, CancellationToken token = default(CancellationToken))
         {
             var serializerSettings = _jira.RestClient.Settings.JsonSerializerSettings;
-            var resource = String.Format("rest/api/2/issue/{0}/remotelink", issueKey);
+            var resource = String.Format("rest/api/latest/issue/{0}/remotelink", issueKey);
             var remoteLinksJson = await _jira.RestClient.ExecuteRequestAsync(Method.GET, resource, null, token).ConfigureAwait(false);
 
             var links = remoteLinksJson.Cast<JObject>();

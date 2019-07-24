@@ -192,7 +192,7 @@ namespace Atlassian.Jira.Remote
                 request.AddJsonBody(requestBody);
             }
 
-            if (queryParameters.Count > 0)
+            if (queryParameters != null)
             {
                 foreach (var parameter in queryParameters)
                 {

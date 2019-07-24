@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth;
 
 namespace Atlassian.Jira.Remote
 {
@@ -38,6 +40,31 @@ namespace Atlassian.Jira.Remote
             if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password))
             {
                 this._restClient.Authenticator = new HttpBasicAuthenticator(username, password);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new instance of the JiraRestClient class.
+        /// </summary
+        /// <param name="url">Url to the JIRA server.</param>
+        /// <param name="consumerKey">Consumer key to use for OAuth1 authentication.</param>
+        /// <param name="consumerSecret">Consumer secret to use for OAuth1 authentication. Should be private key in xml format.</param>
+        /// <param name="accessToken">User access token to use for authenticating API requests.</param>
+        /// <param name="accessTokenSecret">User access token secret to use for authenticating API requests.</param>
+        /// <param name="settings">Settings to configure the rest client.</param>
+        public JiraRestClient(string url, string consumerKey, string consumerSecret, string accessToken, string accessTokenSecret, JiraRestClientSettings settings = null)
+        {
+            url = url.EndsWith("/") ? url : url += "/";
+
+            _clientSettings = settings ?? new JiraRestClientSettings();
+            _restClient = new RestClient(url)
+            {
+                Proxy = _clientSettings.Proxy
+            };
+
+            if (!String.IsNullOrEmpty(consumerKey) && !String.IsNullOrEmpty(consumerSecret) && !String.IsNullOrEmpty(accessToken) && !String.IsNullOrEmpty(accessTokenSecret))
+            {
+                this._restClient.Authenticator = OAuth1Authenticator.ForProtectedResource(consumerKey, consumerSecret, accessToken, accessTokenSecret, OAuthSignatureMethod.RsaSha1);
             }
         }
 
@@ -80,6 +107,15 @@ namespace Atlassian.Jira.Remote
         public async Task<T> ExecuteRequestAsync<T>(Method method, string resource, object requestBody = null, CancellationToken token = default(CancellationToken))
         {
             var result = await ExecuteRequestAsync(method, resource, requestBody, token).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<T>(result.ToString(), Settings.JsonSerializerSettings);
+        }
+
+        /// <summary>
+        /// Executes an async request and serializes the response to an object.
+        /// </summary>
+        public async Task<T> ExecuteRequestAsync<T>(Method method, string resource, Dictionary<string, string> queryParameters, object requestBody = null, CancellationToken token = default(CancellationToken))
+        {
+            var result = await ExecuteRequestAsync(method, resource, queryParameters, requestBody, token).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<T>(result.ToString(), Settings.JsonSerializerSettings);
         }
 
@@ -127,6 +163,46 @@ namespace Atlassian.Jira.Remote
             var response = await ExecuteRawResquestAsync(request, token).ConfigureAwait(false);
             GetValidJsonFromResponse(request, response);
             return response;
+        }
+
+        public async Task<JToken> ExecuteRequestAsync(Method method, string resource, Dictionary<string, string> queryParameters, object requestBody = null, CancellationToken token = default(CancellationToken))
+        {
+            if (method == Method.GET && requestBody != null)
+            {
+                throw new InvalidOperationException($"GET requests are not allowed to have a request body. Resource: {resource}. Body: {requestBody}");
+            }
+
+            var request = new RestRequest();
+            request.Method = method;
+            request.Resource = resource;
+            request.RequestFormat = DataFormat.Json;
+
+            if (requestBody is string)
+            {
+                request.AddParameter(new Parameter
+                {
+                    Name = "application/json",
+                    Type = ParameterType.RequestBody,
+                    Value = requestBody
+                });
+            }
+            else if (requestBody != null)
+            {
+                request.JsonSerializer = new RestSharpJsonSerializer(JsonSerializer.Create(Settings.JsonSerializerSettings));
+                request.AddJsonBody(requestBody);
+            }
+
+            if (queryParameters != null)
+            {
+                foreach (var parameter in queryParameters)
+                {
+                    request.AddQueryParameter(parameter.Key, parameter.Value);
+                }
+            }
+
+            LogRequest(request, requestBody);
+            var response = await ExecuteRawResquestAsync(request, token).ConfigureAwait(false);
+            return GetValidJsonFromResponse(request, response);
         }
 
         /// <summary>

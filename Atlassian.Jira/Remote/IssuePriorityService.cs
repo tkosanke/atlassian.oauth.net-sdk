@@ -22,7 +22,7 @@ namespace Atlassian.Jira.Remote
 
             if (!cache.Priorities.Any())
             {
-                var priorities = await _jira.RestClient.ExecuteRequestAsync<RemotePriority[]>(Method.GET, "rest/api/2/priority", null, token).ConfigureAwait(false);
+                var priorities = await _jira.RestClient.ExecuteRequestAsync<RemotePriority[]>(Method.GET, "rest/api/latest/priority", null, token).ConfigureAwait(false);
                 cache.Priorities.TryAdd(priorities.Select(p => new IssuePriority(p)));
             }
 

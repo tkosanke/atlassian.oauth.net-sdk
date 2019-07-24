@@ -22,7 +22,7 @@ namespace Atlassian.Jira.Remote
         public async Task<ProjectComponent> CreateComponentAsync(ProjectComponentCreationInfo projectComponent, CancellationToken token = default(CancellationToken))
         {
             var serializer = JsonSerializer.Create(_jira.RestClient.Settings.JsonSerializerSettings);
-            var resource = "/rest/api/2/component";
+            var resource = "/rest/api/latest/component";
             var requestBody = JToken.FromObject(projectComponent, serializer);
             var remoteComponent = await _jira.RestClient.ExecuteRequestAsync<RemoteComponent>(Method.POST, resource, requestBody, token).ConfigureAwait(false);
             remoteComponent.ProjectKey = projectComponent.ProjectKey;
@@ -35,7 +35,7 @@ namespace Atlassian.Jira.Remote
 
         public async Task DeleteComponentAsync(string componentId, string moveIssuesTo = null, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format("/rest/api/2/component/{0}?{1}",
+            var resource = String.Format("/rest/api/latest/component/{0}?{1}",
                 componentId,
                 String.IsNullOrEmpty(moveIssuesTo) ? null : "moveIssuesTo=" + Uri.EscapeDataString(moveIssuesTo));
 
@@ -50,7 +50,7 @@ namespace Atlassian.Jira.Remote
 
             if (!cache.Components.Values.Any(c => String.Equals(c.ProjectKey, projectKey)))
             {
-                var resource = String.Format("rest/api/2/project/{0}/components", projectKey);
+                var resource = String.Format("rest/api/latest/project/{0}/components", projectKey);
                 var remoteComponents = await _jira.RestClient.ExecuteRequestAsync<RemoteComponent[]>(Method.GET, resource).ConfigureAwait(false);
                 var components = remoteComponents.Select(remoteComponent =>
                 {

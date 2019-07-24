@@ -65,5 +65,19 @@ namespace Atlassian.Jira.Test.Integration
             return Task.FromResult(result);
 
         }
+
+        public Task<JToken> ExecuteRequestAsync(Method method, string resource, Dictionary<string, string> queryParameters, object requestBody = null, CancellationToken token = default(CancellationToken))
+        {
+            Console.WriteLine($"Method: {method}. Url: {resource}");
+            var response = JsonConvert.DeserializeObject(_responses.Dequeue());
+            return Task.FromResult(JToken.FromObject(response));
+        }
+
+        public Task<T> ExecuteRequestAsync<T>(Method method, string resource, Dictionary<string, string> queryParameters, object requestBody = null, CancellationToken token = default(CancellationToken))
+        {
+            Console.WriteLine($"Method: {method}. Url: {resource}");
+            var result = JsonConvert.DeserializeObject<T>(_responses.Dequeue());
+            return Task.FromResult(result);
+        }
     }
 }

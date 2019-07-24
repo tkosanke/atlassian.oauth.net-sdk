@@ -23,7 +23,7 @@ namespace Atlassian.Jira.Remote
 
             if (!cache.IssueTypes.Any())
             {
-                var remoteIssueTypes = await _jira.RestClient.ExecuteRequestAsync<RemoteIssueType[]>(Method.GET, "rest/api/2/issuetype", null, token).ConfigureAwait(false);
+                var remoteIssueTypes = await _jira.RestClient.ExecuteRequestAsync<RemoteIssueType[]>(Method.GET, "rest/api/latest/issuetype", null, token).ConfigureAwait(false);
                 var issueTypes = remoteIssueTypes.Select(t => new IssueType(t));
                 cache.IssueTypes.TryAdd(issueTypes);
             }
@@ -37,7 +37,7 @@ namespace Atlassian.Jira.Remote
 
             if (!cache.ProjectIssueTypes.TryGetValue(projectKey, out JiraEntityDictionary<IssueType> _))
             {
-                var resource = String.Format("rest/api/2/project/{0}", projectKey);
+                var resource = String.Format("rest/api/latest/project/{0}", projectKey);
                 var projectJson = await _jira.RestClient.ExecuteRequestAsync(Method.GET, resource, null, token).ConfigureAwait(false);
                 var serializerSettings = _jira.RestClient.Settings.JsonSerializerSettings;
 

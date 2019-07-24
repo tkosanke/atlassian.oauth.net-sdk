@@ -21,7 +21,7 @@ namespace Atlassian.Jira.Remote
 
             if (!cache.Statuses.Any())
             {
-                var results = await _jira.RestClient.ExecuteRequestAsync<RemoteStatus[]>(Method.GET, "rest/api/2/status", null, token).ConfigureAwait(false);
+                var results = await _jira.RestClient.ExecuteRequestAsync<RemoteStatus[]>(Method.GET, "rest/api/latest/status", null, token).ConfigureAwait(false);
                 cache.Statuses.TryAdd(results.Select(s => new IssueStatus(s)));
             }
 

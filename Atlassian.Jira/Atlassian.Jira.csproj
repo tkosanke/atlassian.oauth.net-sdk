@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
-    <PackageId>Atlassian.SDK</PackageId>
-    <Version>10.6.0</Version>
-    <Authors>Federico Silva Armas</Authors>
-    <Company>Federico Silva Armas</Company>
-    <Product>Atlassian.SDK</Product>
-    <Copyright>https://bitbucket.org/farmas/atlassian.net-sdk</Copyright>
-    <PackageTags>Atlassian JIRA LINQ</PackageTags>
-    <PackageReleaseNotes>For change history, visit: https://bitbucket.org/farmas/atlassian.net-sdk/wiki/Change%20History</PackageReleaseNotes>
+    <PackageId>Atlassian.OAuth.SDK</PackageId>
+    <Version>10.7.0</Version>
+    <Authors>Tim Kosanke</Authors>
+    <Company>Tim Kosanke</Company>
+    <Product>Atlassian.OAuth.SDK</Product>
+    <Copyright>https://bitbucket.org/farmas/atlassian.net-sdk/wiki/License</Copyright>
+    <PackageTags>Atlassian JIRA LINQ OAuth1</PackageTags>
+    <PackageReleaseNotes>For change history, visit: https://github.com/tkosanke/atlassian.oauth.net-sdk</PackageReleaseNotes>
     <Description>Utilities to interact with Atlassian products. Contains LinqToJira provider for querying JIRA Issue tracker (http://www.atlassian.com/software/jira).</Description>
     <PackageIconUrl>http://i1207.photobucket.com/albums/bb473/fsilva_armas/AtlassianIcon.png</PackageIconUrl>
-    <PackageProjectUrl>https://bitbucket.org/farmas/atlassian.net-sdk</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/tkosanke/atlassian.net-sdk</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>10.6.0.0</AssemblyVersion>
-    <FileVersion>10.6.0.0</FileVersion>
+    <AssemblyVersion>10.7.0.0</AssemblyVersion>
+    <FileVersion>10.7.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Properties\**" />

@@ -35,11 +35,11 @@ namespace Atlassian.Jira.Remote
 
         public async Task DeleteComponentAsync(string componentId, string moveIssuesTo = null, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format("/rest/api/latest/component/{0}?{1}",
-                componentId,
-                String.IsNullOrEmpty(moveIssuesTo) ? null : "moveIssuesTo=" + Uri.EscapeDataString(moveIssuesTo));
+            var resource = String.Format("/rest/api/latest/component/{0}", componentId);
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("groupname", String.Format("{0}", String.IsNullOrEmpty(moveIssuesTo) ? null : Uri.EscapeDataString(moveIssuesTo)));
 
-            await _jira.RestClient.ExecuteRequestAsync(Method.DELETE, resource, null, token).ConfigureAwait(false);
+            await _jira.RestClient.ExecuteRequestAsync(Method.DELETE, resource, queryParameters, token).ConfigureAwait(false);
 
             _jira.Cache.Components.TryRemove(componentId);
         }

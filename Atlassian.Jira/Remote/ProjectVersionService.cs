@@ -43,10 +43,10 @@ namespace Atlassian.Jira.Remote
         public async Task<IPagedQueryResult<ProjectVersion>> GetPagedVersionsAsync(string projectKey, int startAt = 0, int maxResults = 50, CancellationToken token = default(CancellationToken))
         {
             var settings = _jira.RestClient.Settings.JsonSerializerSettings;
-            var resource = String.Format("rest/api/latest/project/{0}/version?startAt={1}&maxResults={2}",
-                projectKey,
-                startAt,
-                maxResults);
+            var resource = String.Format("rest/api/latest/project/{0}/version", projectKey);
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("startAt", $"{startAt}");
+            queryParameters.Add("maxResults", $"{maxResults}");
 
             var result = await _jira.RestClient.ExecuteRequestAsync(Method.GET, resource, null, token).ConfigureAwait(false);
             var versions = result["values"]
@@ -78,10 +78,10 @@ namespace Atlassian.Jira.Remote
 
         public async Task DeleteVersionAsync(string versionId, string moveFixIssuesTo = null, string moveAffectedIssuesTo = null, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format("/rest/api/latest/version/{0}?{1}&{2}",
-                versionId,
-                String.IsNullOrEmpty(moveFixIssuesTo) ? null : "moveFixIssuesTo=" + Uri.EscapeDataString(moveFixIssuesTo),
-                String.IsNullOrEmpty(moveAffectedIssuesTo) ? null : "moveAffectedIssuesTo=" + Uri.EscapeDataString(moveAffectedIssuesTo));
+            var resource = String.Format("/rest/api/latest/version/{0}", versionId);
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("moveFixIssuesTo", String.Format("{0}", String.IsNullOrEmpty(moveFixIssuesTo) ? null : Uri.EscapeDataString(moveFixIssuesTo)));
+            queryParameters.Add("moveAffectedIssuesTo", String.Format("{0}", String.IsNullOrEmpty(moveAffectedIssuesTo) ? null : Uri.EscapeDataString(moveAffectedIssuesTo)));
 
             await _jira.RestClient.ExecuteRequestAsync(Method.DELETE, resource, null, token).ConfigureAwait(false);
 

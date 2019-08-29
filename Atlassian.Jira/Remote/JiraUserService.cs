@@ -26,8 +26,10 @@ namespace Atlassian.Jira.Remote
 
         public Task DeleteUserAsync(string username, CancellationToken token = default(CancellationToken))
         {
-            var resource = String.Format("rest/api/latest/user?username={0}", Uri.EscapeDataString(username));
-            return _jira.RestClient.ExecuteRequestAsync(Method.DELETE, resource, null, token);
+            var resource = "rest/api/latest/user";
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("username", Uri.EscapeDataString(username));
+            return _jira.RestClient.ExecuteRequestAsync(Method.DELETE, resource, queryParameters, token);
         }
 
         public Task<JiraUser> GetUserAsync(string username, CancellationToken token = default(CancellationToken))

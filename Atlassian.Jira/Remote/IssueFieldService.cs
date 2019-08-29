@@ -46,8 +46,11 @@ namespace Atlassian.Jira.Remote
 
             if (!cache.ProjectCustomFields.TryGetValue(projectKey, out JiraEntityDictionary<CustomField> fields))
             {
-                var resource = $"rest/api/latest/issue/createmeta?projectKeys={projectKey}&expand=projects.issuetypes.fields";
-                var jObject = await _jira.RestClient.ExecuteRequestAsync(Method.GET, resource, null, token).ConfigureAwait(false);
+                var resource = $"rest/api/latest/issue/createmeta";
+                var queryParameters = new Dictionary<string, string>();
+                queryParameters.Add("projectKeys", $"{projectKey}");
+                queryParameters.Add("expand", "projects.issuetypes.fields");
+                var jObject = await _jira.RestClient.ExecuteRequestAsync(Method.GET, resource, queryParameters, token).ConfigureAwait(false);
                 var jProject = jObject["projects"].FirstOrDefault();
 
                 if (jProject == null)

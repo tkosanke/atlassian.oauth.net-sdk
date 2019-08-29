@@ -32,8 +32,10 @@ namespace Atlassian.Jira.Remote
 
         public async Task<Project> GetProjectAsync(string projectKey, CancellationToken token = new CancellationToken())
         {
-            var resource = String.Format("rest/api/latest/project/{0}?expand=lead,url", projectKey);
-            var remoteProject = await _jira.RestClient.ExecuteRequestAsync<RemoteProject>(Method.GET, resource, null, token).ConfigureAwait(false);
+            var resource = String.Format("rest/api/latest/project/{0}", projectKey);
+            var queryParameters = new Dictionary<string, string>();
+            queryParameters.Add("expand", "lead,url");
+            var remoteProject = await _jira.RestClient.ExecuteRequestAsync<RemoteProject>(Method.GET, resource, queryParameters, token).ConfigureAwait(false);
             return new Project(_jira, remoteProject);
         }
     }
